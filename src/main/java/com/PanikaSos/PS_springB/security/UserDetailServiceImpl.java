@@ -2,8 +2,7 @@ package com.PanikaSos.PS_springB.security;
 
 import com.PanikaSos.PS_springB.model.ControlUser;
 import com.PanikaSos.PS_springB.model.User;
-import com.PanikaSos.PS_springB.model.dto.AuthResponse;
-import com.PanikaSos.PS_springB.model.dto.LoginDTO;
+import com.PanikaSos.PS_springB.model.dto.*;
 import com.PanikaSos.PS_springB.repository.ControlUserRepository;
 import com.PanikaSos.PS_springB.repository.UserRepository;
 import com.PanikaSos.PS_springB.utils.EncryptPassword;
@@ -69,7 +68,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
         return null;
     }
-
+/*
     public AuthResponse login(LoginDTO loginDTO){
         String email = loginDTO.getEmail();
         String password = loginDTO.getPassword();
@@ -107,7 +106,60 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
             return authResponse;
         }
+        return null;
+    }*/
 
+
+
+    public AuthResponse login(LoginDTO loginDTO){
+
+        String email = loginDTO.getEmail();
+        String password = loginDTO.getPassword();
+
+        Authentication authentication = this.authenticate(email,password);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String accessToken = jwtUtils.createToken(authentication);
+
+
+        AuthResponse authResponse = new AuthResponse();
+        Authorization authorization = new Authorization();
+        UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
+
+        Optional <ControlUser> controlUser = controlUserRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (controlUser.isPresent()){
+            if (controlUser.get().getStatus()!=1){
+                throw new UsernameNotFoundException("User not found");
+            }
+
+            userDetailsResponse.setId(controlUser.get().getId());
+            userDetailsResponse.setFirstName(controlUser.get().getFirstName());
+            userDetailsResponse.setLastName(controlUser.get().getLastName());
+            userDetailsResponse.setEmail(controlUser.get().getEmail());
+            authorization.setRol(controlUser.get().getCuser_rol());
+            authorization.setToken(accessToken);
+
+            authResponse.setUser(userDetailsResponse);
+            authResponse.setToken(authorization);
+
+            return authResponse;
+
+        }else if (user.isPresent()){
+            if (user.get().getStatus()!=1){
+                throw new UsernameNotFoundException("User not found");
+            }
+            userDetailsResponse.setId(user.get().getId_user().longValue());
+            userDetailsResponse.setFirstName(user.get().getFirst_name());
+            userDetailsResponse.setLastName(user.get().getLast_name());
+            userDetailsResponse.setEmail(user.get().getEmail());
+            authorization.setRol(user.get().getUser_rol());
+            authorization.setToken(accessToken);
+
+            authResponse.setUser(userDetailsResponse);
+            authResponse.setToken(authorization);
+            return authResponse;
+        }
         return null;
     }
 
