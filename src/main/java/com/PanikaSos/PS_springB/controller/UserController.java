@@ -1,12 +1,17 @@
 package com.PanikaSos.PS_springB.controller;
 
 import com.PanikaSos.PS_springB.model.User;
+import com.PanikaSos.PS_springB.model.dto.AuthResponse;
 import com.PanikaSos.PS_springB.model.dto.UserDTO;
+import com.PanikaSos.PS_springB.model.dto.UserDetailsResponse;
 import com.PanikaSos.PS_springB.service.UserService;
+import com.PanikaSos.PS_springB.utils.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +40,7 @@ public class UserController {
 
     @PutMapping("/update")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<UserDetailsResponse> updateUser(@RequestBody UserDTO userDTO){
         return new ResponseEntity<>(userService.updateUser(userDTO), HttpStatus.OK);
     }
 
@@ -62,4 +67,12 @@ public class UserController {
     public ResponseEntity<Optional<User>> getByEmail(@PathVariable Integer id){
         return new ResponseEntity<>(userService.findByIdUser(id), HttpStatus.OK);
     }
+
+    @GetMapping("/findUserById/{id}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<Optional<UserDTO>> getUserDTOById(@PathVariable Integer id,@RequestHeader(HttpHeaders.AUTHORIZATION) String JwtToken){
+        return new ResponseEntity<>(userService.validateUserByToken(id,JwtToken), HttpStatus.OK);
+    }
+
+
 }

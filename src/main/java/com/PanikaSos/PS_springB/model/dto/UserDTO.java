@@ -15,9 +15,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
-    private Integer id_user;
-    private String first_name;
-    private String last_name;
+    private Integer id;
+    private String firstName;
+    private String lastName;
     private String phoneNumber;
     private String age;
 
@@ -32,9 +32,9 @@ public class UserDTO {
 
     //Pasar de una entidad User a un UserDTO
     public UserDTO(Optional<User> user) {
-        this.id_user = user.get().getId_user();
-        this.first_name = user.get().getFirst_name();
-        this.last_name = user.get().getLast_name();
+        this.id = user.get().getId();
+        this.firstName = user.get().getFirstName();
+        this.lastName = user.get().getLastName();
         this.phoneNumber = user.get().getPhoneNumber();
         this.age = user.get().getAge();
         this.email = user.get().getEmail();
@@ -42,9 +42,9 @@ public class UserDTO {
     }
 
     public UserDTO(User user) {
-        this.id_user = user.getId_user();
-        this.first_name = user.getFirst_name();
-        this.last_name = user.getLast_name();
+        this.id = user.getId();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
         this.phoneNumber = user.getPhoneNumber();
         this.age = user.getAge();
         this.email = user.getEmail();

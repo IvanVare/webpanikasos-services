@@ -1,8 +1,10 @@
 package com.PanikaSos.PS_springB.service;
 
 import com.PanikaSos.PS_springB.model.User;
+import com.PanikaSos.PS_springB.model.dto.AuthResponse;
 import com.PanikaSos.PS_springB.model.dto.LoginDTO;
 import com.PanikaSos.PS_springB.model.dto.UserDTO;
+import com.PanikaSos.PS_springB.model.dto.UserDetailsResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,11 +16,15 @@ public interface UserService {
 
     void deleteUser(Integer id);
 
-    UserDTO updateUser(UserDTO userDTO);
+    UserDetailsResponse updateUser(UserDTO userDTO);
 
     User addUserRol(Integer idUser, Long idRol);
 
     Optional<User> findByIdUser(Integer id);
+
+    Optional<UserDTO> validateUserByToken(Integer id,String JwtToken);
+
+    Optional<UserDTO> findUserByIdUser(Integer id);
 
     User findByEmail(String Email);
 

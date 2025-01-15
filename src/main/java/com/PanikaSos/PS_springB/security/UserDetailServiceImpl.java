@@ -58,9 +58,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
                     .collect(Collectors.toSet());
 
             return UserPrincipal.builder()
-                    .firstName(user.get().getFirst_name())
-                    .lastName(user.get().getLast_name())
-                    .id(user.get().getId_user().longValue())
+                    .firstName(user.get().getFirstName())
+                    .lastName(user.get().getLastName())
+                    .id(user.get().getId().longValue())
                     .email(user.get().getEmail())
                     .password(user.get().getPassword())
                     .authorities(authorities)
@@ -149,10 +149,11 @@ public class UserDetailServiceImpl implements UserDetailsService {
             if (user.get().getStatus()!=1){
                 throw new UsernameNotFoundException("User not found");
             }
-            userDetailsResponse.setId(user.get().getId_user().longValue());
-            userDetailsResponse.setFirstName(user.get().getFirst_name());
-            userDetailsResponse.setLastName(user.get().getLast_name());
+            userDetailsResponse.setId(user.get().getId().longValue());
+            userDetailsResponse.setFirstName(user.get().getFirstName());
+            userDetailsResponse.setLastName(user.get().getLastName());
             userDetailsResponse.setEmail(user.get().getEmail());
+            userDetailsResponse.setAge(user.get().getAge());
             authorization.setRol(user.get().getUser_rol());
             authorization.setToken(accessToken);
 

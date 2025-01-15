@@ -2,19 +2,21 @@ package com.PanikaSos.PS_springB.service.Impl;
 import com.PanikaSos.PS_springB.model.ControlUser;
 import com.PanikaSos.PS_springB.model.Rol;
 import com.PanikaSos.PS_springB.model.User;
-import com.PanikaSos.PS_springB.model.dto.ControlUserDTO;
-import com.PanikaSos.PS_springB.model.dto.LoginDTO;
-import com.PanikaSos.PS_springB.model.dto.UserDTO;
+import com.PanikaSos.PS_springB.model.dto.*;
 import com.PanikaSos.PS_springB.persistence.dao.UserDAO;
 import com.PanikaSos.PS_springB.repository.RolRepository;
 import com.PanikaSos.PS_springB.repository.UserRepository;
 import com.PanikaSos.PS_springB.service.UserService;
 import com.PanikaSos.PS_springB.utils.EncryptPassword;
+import com.PanikaSos.PS_springB.utils.jwt.JwtUtils;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,9 +32,12 @@ public class UserServiceImpl implements UserService {
     private UserDAO userDAO;
     @Autowired
     private RolRepository rolRepository;
+    @Autowired
+    private JwtUtils jwtUtils;
     
 
     @Override
+    @Transactional
     public UserDTO register(User user){
         User user1 = findByEmail(user.getEmail());
         User user2 = findByPhoneNumber(user.getPhoneNumber());
@@ -48,6 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Integer id){
         User user = this.userDAO.findById(id).orElse(null);
         if (user == null){
@@ -61,27 +67,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO userDTO) {
-        if (userDAO.isValidate("phoneNumber", userDTO.getPhoneNumber(),userDTO.getId_user())){
+    @Transactional
+    public UserDetailsResponse updateUser(UserDTO userDTO) {
+        if (userDAO.isValidate("phoneNumber", userDTO.getPhoneNumber(),userDTO.getId())){
             throw new UnsupportedOperationException("Error al guardar el usuario");
         }
-        Optional<User> user = this.userDAO.findById(userDTO.getId_user());
+        Optional<User> user = this.userDAO.findById(userDTO.getId());
         if (user.isPresent()){
             User currentUser = user.get();
-            currentUser.setFirst_name(userDTO.getFirst_name());
-            currentUser.setLast_name(userDTO.getLast_name());
+            currentUser.setFirstName(userDTO.getFirstName());
+            currentUser.setLastName(userDTO.getLastName());
             currentUser.setPhoneNumber(userDTO.getPhoneNumber());
             currentUser.setAge(userDTO.getAge());
             currentUser.setStatus(userDTO.getStatus());
             this.userRepository.save(currentUser);
             ModelMapper modelMapper = new ModelMapper();
-            return modelMapper.map(currentUser, UserDTO.class);
+            return modelMapper.map(currentUser, UserDetailsResponse.class);
         }else {
             throw new UnsupportedOperationException("Error al guardar el usuario");
         }
     }
 
     @Override
+    @Transactional
     public User addUserRol(Integer idUser, Long idRol) {
         User user = this.userDAO.findById(idUser).orElseThrow(() -> new EntityNotFoundException("User not found"));
         Rol rol = rolRepository.findById(idRol).orElseThrow(() -> new EntityNotFoundException("Rol not found"));
@@ -99,6 +107,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findByIdUser(Integer id){
         Optional<User> user = this.userDAO.findById(id);
         if (user.isPresent()){
@@ -109,18 +118,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<UserDTO> validateUserByToken(Integer id, String JwtToken) {
+        Optional<User> user = this.userDAO.findById(id);
+        DecodedJWT decodedJWT = jwtUtils.validateToken(JwtToken);
+        String email = jwtUtils.extractEmail(decodedJWT);
+        if (user.isPresent() && user.get().getEmail().equals(email)){
+            return Optional.of(new UserDTO(user));
+        }
+        throw new BadCredentialsException("User not found");
+    }
+
+    @Override
+    public Optional<UserDTO> findUserByIdUser(Integer id) {
+        Optional<User> user = this.userDAO.findById(id);
+        if (user.isPresent()){
+            return Optional.of(new UserDTO(user));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public User findByEmail(String email){
         Optional<User> user = userRepository.findByEmail(email);
         return user.orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findByPhoneNumber(String phoneNumber){
         Optional<User> user = userRepository.findByPhoneNumber(phoneNumber);
         return user.orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDTO> findAllUsers(){
         ModelMapper modelMapper = new ModelMapper();
         return userDAO.findAll().stream()

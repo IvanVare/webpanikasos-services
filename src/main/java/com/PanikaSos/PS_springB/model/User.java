@@ -15,11 +15,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_user", nullable = false)
-    private Integer id_user;
+    private Integer id;
     @Column(name = "first_name_user", nullable = false, length = 100)
-    private String first_name;
+    private String firstName;
     @Column(name = "last_name_user", nullable = false, length = 100)
-    private String last_name;
+    private String lastName;
     @Column(name = "phone_number_user", unique = true, nullable = false, length = 30)
     private String phoneNumber;
     @Column(name = "age_user", nullable = false, length = 10)
