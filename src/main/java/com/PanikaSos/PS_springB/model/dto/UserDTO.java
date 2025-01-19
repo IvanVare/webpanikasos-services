@@ -3,6 +3,7 @@ package com.PanikaSos.PS_springB.model.dto;
 import com.PanikaSos.PS_springB.model.Rol;
 import com.PanikaSos.PS_springB.model.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,9 +17,13 @@ import java.util.Set;
 @NoArgsConstructor
 public class UserDTO {
     private Integer id;
+    @NotBlank(message = "First name is required")
     private String firstName;
+    @NotBlank(message = "Last name is required")
     private String lastName;
+    @NotBlank(message = "Phone number is required")
     private String phoneNumber;
+    @NotBlank(message = "Age is required")
     private String age;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

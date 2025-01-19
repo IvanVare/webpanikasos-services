@@ -1,17 +1,16 @@
 package com.PanikaSos.PS_springB.controller;
 
+import com.PanikaSos.PS_springB.exceptions.ServiceExceptions;
 import com.PanikaSos.PS_springB.model.User;
-import com.PanikaSos.PS_springB.model.dto.AuthResponse;
 import com.PanikaSos.PS_springB.model.dto.UserDTO;
 import com.PanikaSos.PS_springB.model.dto.UserDetailsResponse;
 import com.PanikaSos.PS_springB.service.UserService;
-import com.PanikaSos.PS_springB.utils.jwt.JwtUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,26 +32,26 @@ public class UserController {
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteUser(@PathVariable Integer id){
+    public ResponseEntity<String> deleteUser(@PathVariable Integer id) throws ServiceExceptions {
         userService.deleteUser(id);
         return new ResponseEntity<>("Usuario borrado",HttpStatus.OK);
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<UserDetailsResponse> updateUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<UserDetailsResponse> updateUser(@RequestBody @Valid UserDTO userDTO){
         return new ResponseEntity<>(userService.updateUser(userDTO), HttpStatus.OK);
     }
 
     @PutMapping("/user/{idUser}/rol/{idRol}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> addRolUser(@PathVariable Integer idUser,@PathVariable Long idRol){
+    public ResponseEntity<?> addRolUser(@PathVariable Integer idUser,@PathVariable Long idRol) throws ServiceExceptions{
         return new ResponseEntity<>(userService.addUserRol(idUser,idRol), HttpStatus.OK);
     }
 
     @GetMapping("/findAll")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserDTO>> getAllUsers(){
+    public ResponseEntity<List<UserDTO>> getAllUsers() throws ServiceExceptions{
         return new ResponseEntity<>(userService.findAllUsers(), HttpStatus.OK);
     }
 
@@ -64,7 +63,7 @@ public class UserController {
 
     @GetMapping("/findById/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Optional<User>> getByEmail(@PathVariable Integer id){
+    public ResponseEntity<Optional<User>> getById(@PathVariable Integer id){
         return new ResponseEntity<>(userService.findByIdUser(id), HttpStatus.OK);
     }
 

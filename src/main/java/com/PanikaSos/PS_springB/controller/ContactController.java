@@ -25,6 +25,12 @@ public class ContactController {
         return new ResponseEntity<>(contactServiceRequest.register(contact), HttpStatus.CREATED);
     }
 
+    @PostMapping("/uploadContacts")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<?> uploadContacts(@RequestBody Set<Object> contactSet){
+        return new ResponseEntity<>(contactServiceRequest.uploadContacts(contactSet),HttpStatus.CREATED);
+    }
+
     @GetMapping("/findAll")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> findAllContact(){

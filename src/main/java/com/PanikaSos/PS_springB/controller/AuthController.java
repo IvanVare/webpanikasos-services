@@ -6,6 +6,7 @@ import com.PanikaSos.PS_springB.model.dto.LoginDTO;
 import com.PanikaSos.PS_springB.model.dto.UserDTO;
 import com.PanikaSos.PS_springB.security.UserDetailServiceImpl;
 import com.PanikaSos.PS_springB.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> Register(@RequestBody @Validated User user){
+    public ResponseEntity<UserDTO> Register(@RequestBody @Valid @Validated User user){
         return new ResponseEntity<>(userService.register(user),HttpStatus.CREATED);
     }
 

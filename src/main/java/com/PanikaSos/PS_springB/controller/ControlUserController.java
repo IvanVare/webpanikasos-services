@@ -3,10 +3,12 @@ package com.PanikaSos.PS_springB.controller;
 import com.PanikaSos.PS_springB.model.ControlUser;
 import com.PanikaSos.PS_springB.model.dto.ControlUserDTO;
 import com.PanikaSos.PS_springB.service.ControlUserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public class ControlUserController {
     private ControlUserService controlUserService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody ControlUser controlUser){
+    public ResponseEntity<?> register(@RequestBody @Valid @Validated ControlUser controlUser){
         return new ResponseEntity<>(controlUserService.saveControlUser(controlUser), HttpStatus.CREATED);
     }
 

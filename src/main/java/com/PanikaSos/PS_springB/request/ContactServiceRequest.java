@@ -19,6 +19,9 @@ public interface ContactServiceRequest {
     @PostMapping("/register")
     Object register(@RequestBody Object requestBody);
 
+    @PostMapping("/uploadContacts")
+    Set<Object> uploadContacts(@RequestBody Set<Object> requestBodySet);
+
     @GetMapping("/findAll")
     List<Object> findAll();
 

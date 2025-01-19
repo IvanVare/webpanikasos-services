@@ -1,5 +1,6 @@
 package com.PanikaSos.PS_springB.security;
 
+import com.PanikaSos.PS_springB.exceptions.RequestExceptions;
 import com.PanikaSos.PS_springB.model.ControlUser;
 import com.PanikaSos.PS_springB.model.User;
 import com.PanikaSos.PS_springB.model.dto.*;
@@ -8,6 +9,7 @@ import com.PanikaSos.PS_springB.repository.UserRepository;
 import com.PanikaSos.PS_springB.utils.EncryptPassword;
 import com.PanikaSos.PS_springB.utils.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -111,7 +113,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
 
 
-    public AuthResponse login(LoginDTO loginDTO){
+    public AuthResponse login(LoginDTO loginDTO) throws RequestExceptions {
 
         String email = loginDTO.getEmail();
         String password = loginDTO.getPassword();
@@ -119,7 +121,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
         Authentication authentication = this.authenticate(email,password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String accessToken = jwtUtils.createToken(authentication);
-
 
         AuthResponse authResponse = new AuthResponse();
         Authorization authorization = new Authorization();
@@ -130,9 +131,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
         if (controlUser.isPresent()){
             if (controlUser.get().getStatus()!=1){
-                throw new UsernameNotFoundException("User not found");
+                throw new RequestExceptions(HttpStatus.UNAUTHORIZED, "invalid credentials");
             }
-
             userDetailsResponse.setId(controlUser.get().getId());
             userDetailsResponse.setFirstName(controlUser.get().getFirstName());
             userDetailsResponse.setLastName(controlUser.get().getLastName());
@@ -147,7 +147,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
         }else if (user.isPresent()){
             if (user.get().getStatus()!=1){
-                throw new UsernameNotFoundException("User not found");
+                throw new RequestExceptions(HttpStatus.UNAUTHORIZED, "invalid credentials");
             }
             userDetailsResponse.setId(user.get().getId().longValue());
             userDetailsResponse.setFirstName(user.get().getFirstName());
@@ -161,7 +161,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
             authResponse.setToken(authorization);
             return authResponse;
         }
-        return null;
+        throw new RequestExceptions(HttpStatus.UNAUTHORIZED, "invalid credentials");
     }
 
 

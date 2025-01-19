@@ -1,5 +1,6 @@
 package com.PanikaSos.PS_springB.service;
 
+import com.PanikaSos.PS_springB.exceptions.ServiceExceptions;
 import com.PanikaSos.PS_springB.model.User;
 import com.PanikaSos.PS_springB.model.dto.AuthResponse;
 import com.PanikaSos.PS_springB.model.dto.LoginDTO;
@@ -14,23 +15,21 @@ public interface UserService {
 
     UserDTO register(User user);
 
-    void deleteUser(Integer id);
+    void deleteUser(Integer id) throws ServiceExceptions;
 
     UserDetailsResponse updateUser(UserDTO userDTO);
 
-    User addUserRol(Integer idUser, Long idRol);
+    User addUserRol(Integer idUser, Long idRol) throws ServiceExceptions;
 
     Optional<User> findByIdUser(Integer id);
 
     Optional<UserDTO> validateUserByToken(Integer id,String JwtToken);
 
-    Optional<UserDTO> findUserByIdUser(Integer id);
-
     User findByEmail(String Email);
 
     User findByPhoneNumber(String phone_number);
 
-    List<UserDTO> findAllUsers();
+    List<UserDTO> findAllUsers() throws ServiceExceptions;
 
 
 }
