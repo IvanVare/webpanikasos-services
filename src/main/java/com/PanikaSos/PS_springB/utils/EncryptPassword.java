@@ -36,7 +36,7 @@ public class EncryptPassword implements PasswordEncoder {
         if (secretKeyTemp == null) {
             throw new IllegalStateException("Secret key is not initialized.");
         }
-        byte[] iv = new byte[16]; // IV fijo (rellenado con ceros)
+        byte[] iv = new byte[16]; // (rellenado con ceros)
         try {
             IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
             SecretKeySpec secretKey = new SecretKeySpec(secretKeyTemp.getEncoded(), "AES");
